@@ -3629,7 +3629,7 @@ class ConfigService:
                 "messages": [
                     {"role": "user", "content": "你好，请简单介绍一下你自己。"}
                 ],
-                "max_tokens": 50,
+                "max_tokens": 200,
                 "temperature": 0.1
             }
 
@@ -3638,8 +3638,11 @@ class ConfigService:
             if response.status_code == 200:
                 result = response.json()
                 if "choices" in result and len(result["choices"]) > 0:
-                    content = result["choices"][0]["message"]["content"]
-                    if content and len(content.strip()) > 0:
+                    msg = result["choices"][0]["message"]
+                    content = msg.get("content", "")
+                    reasoning = msg.get("reasoning_content", "")
+                    effective = (content or reasoning or "").strip()
+                    if effective:
                         return {
                             "success": True,
                             "message": f"{display_name} API连接测试成功"
